@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ImaginAi
+      POSTGRES_PASSWORD: ImaginAipass
+      POSTGRES_DB: ImaginAidb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  go-backend:
+    build: ./go-backend
+    environment:
+      DB_HOST: postgres
+      DB_USER: ImaginAi
+      DB_PASSWORD: ImaginAipass
+      DB_NAME: ImaginAidb
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+
+  chat-bot:
+    build: ./chat-bot
+    environment:
+      DB_HOST: postgres
+      DB_USER: ImaginAi
+      DB_PASSWORD: ImaginAipass
+      DB_NAME: ImaginAidb
+    ports:
+      - "5001:5001"
+    depends_on:
+      - postgres
+
+volumes:
+  imagin_ai_postgres_data:
+
+networks:
+  default:
+    driver: bridge
