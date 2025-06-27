@@ -8,19 +8,25 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ImaginAi -d ImaginAidb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
-  go-backend:
-    build: ./go-backend
+  server:
+    build: ./server
     environment:
       DB_HOST: postgres
       DB_USER: ImaginAi
       DB_PASSWORD: ImaginAipass
       DB_NAME: ImaginAidb
     ports:
-      - "5000:5000"
+      - "5050:5050"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
   chat-bot:
     build: ./chat-bot
@@ -30,12 +36,13 @@ services:
       DB_PASSWORD: ImaginAipass
       DB_NAME: ImaginAidb
     ports:
-      - "5001:5001"
+      - "5000:5000"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
 volumes:
-  imagin_ai_postgres_data:
+  pg_data:
 
 networks:
   default:

@@ -1,12 +1,14 @@
-FROM python:alpine
+FROM golang:1.24-alpine
 
 WORKDIR /app
 
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+COPY go.* ./
+RUN go mod download
 
 COPY . .
 
-EXPOSE 5001
+RUN go build -o main cmd/main.go
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5001"]
+EXPOSE 5000
+
+CMD ["./main"]

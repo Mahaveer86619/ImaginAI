@@ -7,8 +7,8 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o main main.go
+RUN go build -o main cmd/main.go
 
-EXPOSE 5000
+EXPOSE 5050
 
 CMD ["./main"]
